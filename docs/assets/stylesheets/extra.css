@@ -1,0 +1,98 @@
+/* =============================================================================
+   LUX Actuaries & Consultancy — brand theme for MkDocs Material
+   Single source of truth for colours & fonts. Edit here only (DRY).
+   ============================================================================= */
+
+:root {
+  /* --- LUX brand palette (from the brand guide) --- */
+  --lux-dark-blue:  #004475;
+  --lux-light-blue: #68ade0;
+  --lux-dark-gray:  #1f1f1f;
+  --lux-mid-gray:   #575757;
+  --lux-light-gray: #d9d9d9;
+  --lux-white:      #ffffff;
+
+  /* Primary/secondary typefaces. Open Sans = web font, Arial = safe fallback. */
+  --md-text-font-family: "Open Sans", Arial, Helvetica, sans-serif;
+}
+
+/* Apply the font stack to body + form controls (Open Sans first, Arial fallback) */
+body,
+input,
+.md-typeset {
+  font-family: "Open Sans", Arial, Helvetica, sans-serif;
+}
+
+/* -----------------------------------------------------------------------------
+   LIGHT MODE  (scheme: default)
+   Header/primary = LUX dark blue, accent/links = LUX light blue.
+   -------------------------------------------------------------------------- */
+[data-md-color-scheme="default"] {
+  --md-primary-fg-color:        #004475;
+  --md-primary-fg-color--light: #185f9a;
+  --md-primary-fg-color--dark:  #003257;
+  --md-primary-bg-color:        #ffffff;
+  --md-primary-bg-color--light: #ffffffcc;
+
+  --md-accent-fg-color:         #68ade0;
+  --md-accent-fg-color--transparent: #68ade01a;
+
+  --md-typeset-a-color:         #004475;
+
+  /* neutral greys from the brand */
+  --md-default-fg-color--light:  #575757;
+  --md-typeset-mark-color:       #68ade04d;
+}
+
+/* -----------------------------------------------------------------------------
+   DARK MODE  (scheme: slate)
+   Keep the header LUX dark blue for brand consistency; page bg = LUX dark grey;
+   links switch to LUX light blue for contrast on dark backgrounds.
+   -------------------------------------------------------------------------- */
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color:        #004475;
+  --md-primary-fg-color--light: #185f9a;
+  --md-primary-fg-color--dark:  #003257;
+  --md-primary-bg-color:        #ffffff;
+
+  --md-accent-fg-color:         #68ade0;
+
+  --md-typeset-a-color:         #68ade0;
+
+  /* backgrounds tuned to LUX dark/mid grey */
+  --md-default-bg-color:        #1f1f1f;
+  --md-default-fg-color:        #d9d9d9;
+  --md-default-fg-color--light: #d9d9d9;
+  --md-code-bg-color:           #2a2a2a;
+  --md-footer-bg-color:         #171717;
+}
+
+/* -----------------------------------------------------------------------------
+   Logo — white background so the LUX logo stays legible on the dark-blue header
+   -------------------------------------------------------------------------- */
+.md-header__button.md-logo {
+  padding: 0.2rem 0.35rem;
+}
+.md-header__button.md-logo img,
+.md-header__button.md-logo svg {
+  background: var(--lux-white);
+  padding: 4px 8px;
+  border-radius: 6px;
+  height: 2.1rem;
+  width: auto;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+/* -----------------------------------------------------------------------------
+   Small polish
+   -------------------------------------------------------------------------- */
+/* Section tabs: subtle bottom accent on the active tab */
+.md-tabs__link--active {
+  border-bottom: 2px solid var(--lux-light-blue);
+}
+
+/* Admonition & code niceties inherit brand accent automatically via variables */
+.md-typeset .md-button--primary {
+  background-color: var(--lux-dark-blue);
+  border-color: var(--lux-dark-blue);
+}

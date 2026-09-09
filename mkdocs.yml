@@ -1,0 +1,181 @@
+# =============================================================================
+#  KNIME Pipeline Documentation  —  MkDocs Material configuration
+#  Brand: LUX Actuaries & Consultancy
+# =============================================================================
+# NOTE: Edit the four placeholders marked  # <-- EDIT  to match your repo/URLs.
+# =============================================================================
+
+site_name: LUX Data Operations Guide
+site_description: Step-by-step guide to processing, transforming, validating, and triangulating data using Excel, KNIME, and Python.
+site_author: Ahmed Tawfik
+site_url: https://Tn-data.github.io/doc-insur-data-pipeline/   # <-- EDIT
+
+repo_name: LUX_Data_Operations_Guide                       # <-- EDIT
+repo_url: https://github.com/Tn-data/doc-insur-data-pipeline      # <-- EDIT
+edit_uri: edit/main/docs/                                 # <-- EDIT (branch name)
+
+copyright: Copyright &copy; LUX Actuaries &amp; Consultancy EG
+
+nav:
+  - Home: index.md
+  
+  - Tutorials (Getting Started):
+      - Project Overview: tutorials/overview.md
+      - Tech Stack Primer: tutorials/tech-stack.md
+      - Quick Start Guide: tutorials/quick-start.md
+      
+  - How-To Guides:
+      - Download & Install: how-to/download-install.md
+      - Configure the Environment: how-to/configuration.md
+      - Prepare the Excel Inputs: how-to/prepare-inputs.md
+      - Run the Workflow: how-to/run-workflow.md
+      - Modify the Pipeline: how-to/modify-pipeline.md
+      - Troubleshoot Common Errors: how-to/troubleshooting.md
+      
+  - Reference (Developer Specs):
+      - KNIME Nodes (Inputs & Outputs): reference/knime-nodes.md
+      - Python Script Specifications: reference/python-scripts.md
+      - Excel Data Schemas: reference/excel-schemas.md
+      - Config File Settings: reference/config-settings.md
+      
+  - Explanation (Actuarial & System Logic):
+      - Core Triangulation Logic: explanation/triangulation-logic.md
+      - Architecture Design: explanation/architecture.md
+      - Assumptions & Limitations: explanation/assumptions.md
+# -----------------------------------------------------------------------------
+#  Theme
+# -----------------------------------------------------------------------------
+theme:
+  name: material
+  language: en
+  logo: https://res.cloudinary.com/lux-management-and-holding-fz-lle/image/upload/f_auto,q_auto,w_1920/v1659009262/assets/logo_hzfavi.png
+  favicon: assets/images/logos/favicon.ico
+
+  font:
+    text: Open Sans
+    code: Roboto Mono
+
+  palette:
+    # LIGHT MODE
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+
+    # DARK MODE
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
+
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.indexes
+    - navigation.expand
+    - navigation.top
+    - navigation.footer
+    - navigation.tracking
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+    - content.tooltips
+
+# -----------------------------------------------------------------------------
+#  Custom CSS / JS
+# -----------------------------------------------------------------------------
+extra_css:
+  - assets/stylesheets/extra.css
+extra_javascript:
+  - assets/javascripts/extra.js
+
+# -----------------------------------------------------------------------------
+#  DRY variables (mkdocs-macros) — define once, reuse everywhere as {{ ... }}
+# -----------------------------------------------------------------------------
+extra:
+  brand:
+    dark_blue: "#004475"
+    light_blue: "#68ade0"
+    dark_gray: "#1f1f1f"
+    mid_gray: "#575757"
+    light_gray: "#d9d9d9"
+  company: LUX Actuaries & Consultancy EG
+  author: Ahmed Tawfik
+  social:
+    - icon: fontawesome/brands/youtube
+      link: https://www.youtube.com/@TawfikTheAnalyst
+      name: YouTube
+    - icon: fontawesome/brands/github
+      link: https://github.com/Tn-Data      # <-- EDIT if needed
+  generator: false
+
+# -----------------------------------------------------------------------------
+#  Plugins
+# -----------------------------------------------------------------------------
+plugins:
+  - search
+  - awesome-pages          # auto-nav: drop a folder + optional .pages file
+  - macros                 # {{ variables }} and reusable jinja
+  - glightbox              # click-to-zoom for screenshots/graphs
+  - mkdocs-jupyter:        # render .ipynb notebooks as pages
+      include_source: true
+      execute: false
+  - minify:
+      minify_html: true
+
+# -----------------------------------------------------------------------------
+#  Markdown extensions (DRY includes, admonitions, mermaid, tabs, ...)
+# -----------------------------------------------------------------------------
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      permalink_title: Link to this section
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.tilde
+  - pymdownx.caret
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  # ---- DRY engine ----------------------------------------------------------
+  - pymdownx.snippets:
+      # Reusable content lives in ./includes/ — write once, --8<-- anywhere.
+      base_path: [includes]
+      check_paths: true
+      # Auto-append the glossary to every page so abbreviations get tooltips.
+      auto_append:
+        - abbreviations.md
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid          # ```mermaid diagrams for pipeline flow
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+

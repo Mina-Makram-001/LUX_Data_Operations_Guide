@@ -1,0 +1,22 @@
+# MkDocs build output
+site/
+.cache/
+
+# Virtual environment
+vir_env/
+.venv/
+venv/
+
+# Python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Archive
+archive/
