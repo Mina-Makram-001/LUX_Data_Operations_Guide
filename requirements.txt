@@ -1,5 +1,5 @@
 # Documentation toolchain — install inside vir_env:
-#   source vir_env/bin/activate
+#   source vir_env/bin/activate       # Windows PowerShell: .\vir_env\Scripts\Activate.ps1
 #   pip install -r requirements.txt
 mkdocs-material>=9.5
 mkdocs-awesome-pages-plugin>=2.9
@@ -8,3 +8,11 @@ mkdocs-glightbox>=0.4
 mkdocs-jupyter>=0.24
 mkdocs-minify-plugin>=0.8
 pymdown-extensions>=10.7
+
+# FastAPI Backend & Gemini Integration:
+fastapi>=0.110.0
+uvicorn>=0.28.0
+pydantic>=2.0.0
+google-genai>=0.1.0
+python-dotenv>=1.0.0
+mkdocstrings[python]

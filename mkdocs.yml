@@ -18,7 +18,7 @@ copyright: Copyright &copy; LUX Actuaries &amp; Consultancy EG
 
 nav:
   - Home: index.md
-  
+  - API ref: t-ref.md
   - Tutorials (Getting Started):
       - Project Overview: tutorials/overview.md
       - Tech Stack Primer: tutorials/tech-stack.md
@@ -127,6 +127,10 @@ extra:
 # -----------------------------------------------------------------------------
 plugins:
   - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
   - awesome-pages          # auto-nav: drop a folder + optional .pages file
   - macros                 # {{ variables }} and reusable jinja
   - glightbox              # click-to-zoom for screenshots/graphs
