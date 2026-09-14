@@ -42,6 +42,8 @@ nav:
       - Core Triangulation Logic: explanation/triangulation-logic.md
       - Architecture Design: explanation/architecture.md
       - Assumptions & Limitations: explanation/assumptions.md
+
+  - Ask Gemini: gemini-assistant/gemini-assistant.md
 # -----------------------------------------------------------------------------
 #  Theme
 # -----------------------------------------------------------------------------
