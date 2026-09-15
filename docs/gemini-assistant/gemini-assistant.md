@@ -9,7 +9,7 @@ Ask any question about the documentation or system logic below.
   /* Custom styling for clean Markdown content inside chat bubbles */
   .bot-bubble p { margin: 0 0 8px 0; line-height: 1.4; }
   .bot-bubble p:last-child { margin-bottom: 0; }
-  .bot-bubble code { background: #010916; padding: 2px 4px; border-radius: 4px; font-family: monospace; }
+  .bot-bubble code { background: #5c62c9; padding: 2px 4px; border-radius: 4px; font-family: monospace; }
   .bot-bubble pre { background: #1e1e1e; color: #f8f8f2; padding: 10px; border-radius: 6px; overflow-x: auto; margin: 6px 0; }
   .bot-bubble pre code { background: transparent; padding: 0; color: inherit; }
   .bot-bubble ul, .bot-bubble ol { margin: 4px 0 8px 20px; padding: 0; }

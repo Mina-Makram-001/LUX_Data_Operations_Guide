@@ -3,7 +3,7 @@
 This module is the *pure core* behind the KNIME "Ingest" node. It contains no
 KNIME imports, so it can be imported, run, and unit-tested on any machine with
 pandas installed. The KNIME Python Script node is a thin glue layer that reads
-flow variables, imports th  is module, and calls :func:`ingest_folder`.
+flow variables, imports this module, and calls :func:`ingest_folder`.
 
 Read strategy (business rule)
 -----------------------------

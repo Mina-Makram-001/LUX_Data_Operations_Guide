@@ -29,7 +29,7 @@ retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
 
 # Initialize Gemini model
 llm = ChatGoogleGenerativeAI(
-    model="gemini-3.8-flash",
+    model="gemini-flash-lite-latest",
     google_api_key=os.getenv("GEMINI_API_KEY")
 )
 
