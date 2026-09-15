@@ -2,6 +2,20 @@
 
 Ask any question about the documentation or system logic below.
 
+<!-- Include marked.js library for rendering Markdown into formatted HTML -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<style>
+  /* Custom styling for clean Markdown content inside chat bubbles */
+  .bot-bubble p { margin: 0 0 8px 0; line-height: 1.4; }
+  .bot-bubble p:last-child { margin-bottom: 0; }
+  .bot-bubble code { background: #010916; padding: 2px 4px; border-radius: 4px; font-family: monospace; }
+  .bot-bubble pre { background: #1e1e1e; color: #f8f8f2; padding: 10px; border-radius: 6px; overflow-x: auto; margin: 6px 0; }
+  .bot-bubble pre code { background: transparent; padding: 0; color: inherit; }
+  .bot-bubble ul, .bot-bubble ol { margin: 4px 0 8px 20px; padding: 0; }
+  .bot-bubble h1, .bot-bubble h2, .bot-bubble h3 { margin: 8px 0 4px 0; font-size: 1.1em; color: #0d47a1; }
+</style>
+
 <div style="max-width: 650px; margin: 20px auto; font-family: sans-serif;">
   <div id="chat-box" style="border: 1px solid #ccc; border-radius: 8px; padding: 15px; height: 350px; overflow-y: auto; background: #fafafa; display: flex; flex-direction: column; gap: 10px;">
     <div style="background: #e3f2fd; color: #0d47a1; padding: 10px; border-radius: 6px; align-self: flex-start;">
@@ -32,8 +46,9 @@ async function sendMessage() {
   inputEl.value = '';
   chatBox.scrollTop = chatBox.scrollHeight;
 
-  // Placeholder Bot Message
+  // Placeholder Bot Message Container
   const botMsg = document.createElement('div');
+  botMsg.className = 'bot-bubble';
   botMsg.style.cssText = "background: #e3f2fd; color: #0d47a1; padding: 10px; border-radius: 6px; align-self: flex-start;";
   botMsg.innerText = "Thinking...";
   chatBox.appendChild(botMsg);
@@ -48,7 +63,8 @@ async function sendMessage() {
 
     const data = await response.json();
     if (response.ok) {
-      botMsg.innerText = data.reply;
+      // MODIFIED: Parse Markdown into formatted HTML elements
+      botMsg.innerHTML = marked.parse(data.reply);
     } else {
       botMsg.innerText = "Error: " + (data.detail || "Unable to process request.");
     }
