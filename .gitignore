@@ -24,3 +24,8 @@ archive/
 
 # env
 .env
+
+# ignore vectorDB
+*.sqlite3
+*.bin
+RAG_src/vectorDB/
