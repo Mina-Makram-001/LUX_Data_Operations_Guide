@@ -134,7 +134,7 @@ plugins:
   - mkdocstrings:
       handlers:
         python:
-          paths: [src]
+          paths: [docs/src]
   - awesome-pages          # auto-nav: drop a folder + optional .pages file
   - macros                 # {{ variables }} and reusable jinja
   - glightbox              # click-to-zoom for screenshots/graphs
