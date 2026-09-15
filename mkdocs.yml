@@ -33,7 +33,11 @@ nav:
       - Troubleshoot Common Errors: how-to/troubleshooting.md
       
   - Reference (Developer Specs):
-      - KNIME Nodes (Inputs & Outputs): reference/knime-nodes.md
+    - Knime Worflows:
+      - claims part I:
+        - Control Component: reference\knime\claims-p1\cmp-control.md 
+        - ingest component: reference\knime\claims-p1\cmp-ingest.md
+
       - Python Script Specifications: reference/python-scripts.md
       - Excel Data Schemas: reference/excel-schemas.md
       - Config File Settings: reference/config-settings.md
