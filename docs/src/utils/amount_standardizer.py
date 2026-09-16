@@ -1,12 +1,12 @@
-# =============================================================================
-# MODULE: amount_standardizer
-# PURPOSE: Standardize amount columns from string to float, capturing failures
-# DOMAIN: utils
-#
-# This module provides core logic for financial amount parsing with diagnostic
-# tracking. It is pure Python (no KNIME dependencies in core functions) and
-# fully testable in isolation.
-# =============================================================================
+"""
+MODULE: amount_standardizer
+PURPOSE: Standardize amount columns from string to float, capturing failures
+DOMAIN: utils
+
+This module provides core logic for financial amount parsing with diagnostic
+tracking. It is pure Python (no KNIME dependencies in core functions) and
+fully testable in isolation.
+"""
 
 import pandas as pd
 import gc

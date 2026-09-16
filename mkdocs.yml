@@ -44,19 +44,30 @@ nav:
         - Export Meta: reference/knime/claims-p1/meta-standardize&export/export-meta/export-meta.md
 
       - claims part II:
-          - Float Parse Component: reference/knime/claims-p2/meta-standardize/cmp-float-parse.md
-          - Date Parse Component: reference/knime/claims-p2/meta-standardize/cmp-date-parse.md
-          - Mapping LOB Meta: reference/knime/claims-p2/meta-standardize/meta-lob-mapping.md
+        - Overview: reference/knime/claims-p2/intro_claims_II.md
+        - Standardize Meta:
+          - Date Parse Component: reference/knime/claims-p2/standrize-meta/date_parse-cmp/date-parse-cmp.md
+          - Float Parse Component: reference/knime/claims-p2/standrize-meta/float_parse-cmp/float-parse-cmp.md
+          - Amount Standardizer Script: reference/knime/claims-p2/standrize-meta/float_parse-cmp/amount_standardizer.md
+          - Mapping LOB Meta: reference/knime/claims-p2/standrize-meta/mapping_lob-meta/meta-lob-mapping.md
+          - Mapping Status Meta: reference/knime/claims-p2/standrize-meta/mapping_status-meta/meta-mapping-status.md
+        - Validation Meta: reference/knime/claims-p2/validation-meta/validation-meta.md
+        - Reconciliation Meta: reference/knime/claims-p2/reconciliation-meta/reconciliation-meta.md
+        - Export Meta: reference/knime/claims-p2/export-meta/export-meta.md
+
+      - claims part III:
+        - Overview: reference/knime/claims-p3/intro_claims_III.md
+        - Data Fix Meta: reference/knime/claims-p3/data_fix-meta/data_fix-meta.md
+
+      - claims part IV:
+        - Overview: reference/knime/claims-p4/intro_claims_IIII.md
+        - Database Export Meta: reference/knime/claims-p4/database_export-meta/database_export-meta.md
 
       - Python Script Specifications: reference/python-scripts.md
       - Excel Data Schemas: reference/excel-schemas.md
       - Config File Settings: reference/config-settings.md
-      
-  - Explanation (Actuarial & System Logic):
-      - Core Triangulation Logic: explanation/triangulation-logic.md
-      - Architecture Design: explanation/architecture.md
-      - Assumptions & Limitations: explanation/assumptions.md
 
+      
   - Ask Gemini: gemini-assistant/gemini-assistant.md
 # -----------------------------------------------------------------------------
 #  Theme

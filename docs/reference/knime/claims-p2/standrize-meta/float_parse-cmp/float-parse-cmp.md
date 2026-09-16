@@ -65,33 +65,63 @@ The sub-workflow consists of three distinct branches: schema extraction, metadat
 ## 🐍 Python Execution Logic
 
 The inner **Python Script** node dynamically identifies target columns and sanitizes non-numeric symbols using `pandas`.
+??? note "Python Execution Logic — [amount_standardizer.py](.\amount_standardizer.md)"
 
-```python
-import pandas as pd
-import re
+    ```python
+    import sys
+    import importlib
+    import traceback
+    import knime.scripting.io as knio
+    import pandas as pd
 
-# Access input table from KNIME
-df = knio.input_tables[0].to_pandas()  # (1)
+    # Get code path from flow variable
+    code_base_path = knio.flow_variables.get('code_base_path')
+    if not code_base_path:
+        raise ValueError("Flow variable 'code_base_path' not set.")
 
-# Retrieve target float columns dynamically
-target_cols = knio.flow_variables['float_target_columns'].split(',')  # (2)
+    # Import and reload the module
+    if code_base_path not in sys.path:
+        sys.path.insert(0, code_base_path)
 
-for col in target_cols:
-    if col in df.columns:
-        # Clean currency symbols, commas, and trailing spaces
-        df[col] = (
-            df[col]
-            .astype(str)
-            .str.replace(r'[^\d.-]', '', regex=True)  # (3)
-            .replace('', None)
+    try:
+        import utils.amount_standardizer as amount_standardizer
+        importlib.reload(amount_standardizer)
+    except ImportError as e:
+        raise ImportError(f"Cannot import amount_standardizer from {code_base_path}: {e}")
+
+    # Read inputs
+    data_df = knio.input_tables[0].to_pandas()
+    amount_columns = knio.input_tables[1].to_pandas()["NEW"].tolist()
+
+    tracking_columns = [
+        "LA_SOURCE_FILE",
+        "LA_SOURCE_PAGE", 
+        "LA_R_FILE_NAME",
+        "LA_SOURCE_ROW"
+    ]
+
+    # Call the standardization function
+    try:
+        standardized_df, summary_df, diagnostics_df = amount_standardizer.standardize_amounts(
+            data_df=data_df,
+            amount_columns=amount_columns,
+            tracking_columns=tracking_columns,
+            null_to_zero=True
         )
-        # Cast sanitized values to float64
-        df[col] = pd.to_numeric(df[col], errors='coerce')  # (4)
 
-# Output converted dataset back to KNIME pipeline
-knio.output_tables[0] = knio.Table.from_pandas(df)
+        # Log results
+        amount_standardizer.log_standardization_report(summary_df)
 
-```
+        # Write outputs
+        knio.output_tables[0] = knio.Table.from_pandas(standardized_df)
+        knio.output_tables[1] = knio.Table.from_pandas(summary_df)
+        knio.output_tables[2] = knio.Table.from_pandas(diagnostics_df)
+
+    except Exception as e:
+        print("ERROR: Node failed.")
+        print(traceback.format_exc())
+        raise
+    ```
 
 1. Reads input table directly into a pandas DataFrame using `knime.scripting.io`.
 2. Pulls dynamic target column list passed via flow variables.
