@@ -35,10 +35,13 @@ nav:
   - Reference (Developer Specs):
     - Knime Worflows:
       - claims part I:
-        - Control Component: reference\knime\claims-p1\cmp-control.md 
-        - ingest component: reference\knime\claims-p1\cmp-ingest.md
-        - py script: reference\knime\claims-p1\py-read-excel.md
-        - py table validation: reference\knime\claims-p1\سpy-table-validation.md
+        - Control Component: reference/knime/claims-p1/cmp-controle/cmp-control.md
+        - Ingest Component: reference/knime/claims-p1/cmp.ingest.md/cmp-ingest.md
+        - Python Glue Read Excel: reference/knime/claims-p1/cmp.ingest.md/py-glue-read-excel.md
+        - Python Read Excel: reference/knime/claims-p1/cmp.ingest.md/py-read-excel.md
+        - Python Table Validator: reference/knime/claims-p1/cmp.ingest.md/py-table-validator.md
+        - Meta Standardize & Export: reference/knime/claims-p1/meta-standardize&export/meta-standardize&export.md
+        - Export Meta: reference/knime/claims-p1/meta-standardize&export/export-meta/export-meta.md
 
       - claims part II:
           - Float Parse Component: reference/knime/claims-p2/meta-standardize/cmp-float-parse.md
