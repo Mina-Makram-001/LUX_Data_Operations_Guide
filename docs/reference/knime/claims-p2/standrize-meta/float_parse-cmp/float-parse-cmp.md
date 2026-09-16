@@ -1,72 +1,68 @@
+# Amount Standardization (`float_parse-cmp`)
 
----
-title: Float Parse Metanode Component
-description: Technical documentation for the Float Parsing sub-workflow component in KNIME claims processing.
----
-
-# Float Parse Component (`cmp-float-parse`)
-
-The **Float Parse Component** is a metanode sub-workflow within the `claims_p2v1` pipeline. It automates the extraction, validation, and conversion of raw numerical and currency fields into standardized floating-point representations prior to database ingestion.
+**Workflow Node:** Python Script (Float Parse Component)  
+**Module Reference:** `standrize-meta/float_parse-cmp/float-parse-cmp.md`  
+**External Logic Script:** [`amount_standardizer.py`](.\amount_standardizer.md)
 
 ---
 
-## 📌 Executive Overview
+## Overview
 
-```mermaid
-flowchart LR
-    A[Component Input] --> B[Excel Reader: Metadata]
-    A --> C[Extract Table Spec]
-    B --> D[Nominal Value Row Filter]
-    C --> E[Row Filter]
-    D & E --> F[Value Lookup]
-    F --> G[Python Script]
-    G --> H[Component Output]
-
-```
-
-!!! note "Primary Objective"
-Ensure string-formatted financial fields (e.g., `$1,250.50`, `1250,50 EUR`) are reliably cast into IEEE 754 standard double-precision floating-point numbers without losing precision.
+This component node performs numeric and financial amount standardization across target columns dynamically passed from upstream configuration nodes. It executes within the KNIME Python Script environment (`knio`), importing core transformation routines from the central `utils.amount_standardizer` Python library.
 
 ---
 
-## 🛠️ Internal Workflow Architecture
+## Key Responsibilities
 
-The sub-workflow consists of three distinct branches: schema extraction, metadata filtering, and execution.
+1. **Dynamic Workspace Resolution**: Dynamically imports and reloads `utils.amount_standardizer` from the path defined in `code_base_path`.
+2. **Schema & Target Column Extraction**: Reads main claim data from Input Port 0 and target column specifications from Input Port 1 (`NEW` column list).
+3. **Lineage Preservation**: Tracks record source details across four key source metadata fields (`LA_SOURCE_FILE`, `LA_SOURCE_PAGE`, `LA_R_FILE_NAME`, `LA_SOURCE_ROW`).
+4. **Standardization Execution**: Calls `standardize_amounts` to clean numeric values, handle missing/null entries (`null_to_zero=True`), and compute audit metrics.
+5. **Multi-Port Output Generation**: Emits standardized claims, summary transformation reports, and diagnostic log tables.
 
-=== "Workflow Topology"
+---
 
-* **`Component Input`**: Receives the incoming raw dataset stream.
-* **`Excel Reader (Data_Var_Names)`**: Ingests variable mappings and variable-type definitions from central configuration files.
-* **`Nominal Value Row Filter`**: Filters data variable mapping rules strictly for numeric and float types.
-* **`Extract Table Spec`**: Dynamically extracts column headers and storage types from the incoming table.
-* **`Value Lookup`**: Merges table specifications with expected target data types to identify columns requiring parsing.
-* **`Row Filter`**: Isolates target numerical fields matching target criteria.
-* **`Python Script`**: Applies vectorized string transformation, cleaning, and float casting.
-* **`Component Output`**: Emits processed streams back to the parent `Standardize` pipeline.
+## Configuration & Flow Variables
 
-
-
-=== "Data Flow Matrix"
-
-
-| Node Name | Node Type | Purpose / Operation |
+| Variable Name | Required | Description |
 | :--- | :---: | :--- |
-| `Component Input` | KNIME Core | Pipeline entry point for data & variables. |
-| `Excel Reader` | I/O | Reads mapping file containing field specifications. |
-| `Extract Table Spec` | Meta | Extracts incoming column names and schema. |
-| `Value Lookup` | Data Manip | Joins incoming columns with configured float targets. |
-| `Python Script` | Scripting | Executes Regex cleaning and `float()` conversion. |
-| `Component Output` | KNIME Core | Emits processed dataset to downstream nodes. |
-
-
+| `code_base_path` | **Yes** | Root directory path containing the shared Python utility scripts repository. |
 
 ---
 
-## 🐍 Python Execution Logic
+## Node Inputs & Outputs
 
-The inner **Python Script** node dynamically identifies target columns and sanitizes non-numeric symbols using `pandas`.
+### Input Ports
+
+| Port Index | Input Source | Description | Expected Format |
+| :---: | :--- | :--- | :--- |
+| `0` | Upstream Data Stream | Raw/semi-processed claims dataset requiring float parsing. | pandas DataFrame |
+| `1` | Variable Column Specs | List of amount column names to be processed (extracted from column `NEW`). | Single-column table (`NEW`) |
+
+### Output Ports
+
+| Port Index | Dataset Name | Description |
+| :---: | :--- | :--- |
+| `0` | `standardized_df` | Main claims dataset with cleaned float/currency fields. |
+| `1` | `summary_df` | High-level summary of standardized rows, zero-filled nulls, and error counts. |
+| `2` | `diagnostics_df` | Detailed row-level audit trail for records with parse exceptions or flags. |
+
+---
+
+## Lineage Tracking Fields
+
+The following tracking fields are passed into the standardizer to preserve data provenance and record-level traceability:
+
+- `LA_SOURCE_FILE` — Source file name or identifier.
+- `LA_SOURCE_PAGE` — Source page/sheet reference.
+- `LA_R_FILE_NAME` — Relative source file path.
+- `LA_SOURCE_ROW` — Original row index in the raw file.
+
+---
+
+## Script Execution Logic
+
 ??? note "Python Execution Logic — [amount_standardizer.py](.\amount_standardizer.md)"
-
     ```python
     import sys
     import importlib
@@ -122,34 +118,3 @@ The inner **Python Script** node dynamically identifies target columns and sanit
         print(traceback.format_exc())
         raise
     ```
-
-1. Reads input table directly into a pandas DataFrame using `knime.scripting.io`.
-2. Pulls dynamic target column list passed via flow variables.
-3. Removes non-numeric characters except decimals (`.`) and negative indicators (`-`).
-4. Converts strings to `float64`, safely coercing unparseable values to `NaN`.
-
----
-
-## ⚡ Data Quality Checks & Outputs
-
-Data flowing through this metanode is continuously validated against data quality rules:
-
-!!! tip "Target Output Streams"
-* **Clean Data Stream**: Flows directly into the **`Date Parse`** metanode.
-* **Audit Log Stream**: Exports invalid or failed float conversions directly to dedicated Parquet storage (`DQR03` / `DQR04` writer outputs).
-
-* [x] Remove thousand-separator commas (`,`)
-* [x] Strip non-numeric currency symbols (`$`, `€`, `EGP`)
-* [x] Coerce nulls and blank strings to `NaN`
-* [ ] *Future:* Handle European decimal comma notation (`1.000,00`) dynamically
-
----
-
-## 🔍 Related Components
-
-* [Date Parse Metanode Guide](https://www.google.com/search?q=cmp-date-parse.md)
-* [LOB Mapping Metanode Guide](https://www.google.com/search?q=meta-lob-mapping.md)
-
-```
-
-```
