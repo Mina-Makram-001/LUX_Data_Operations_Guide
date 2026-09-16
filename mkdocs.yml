@@ -38,6 +38,7 @@ nav:
         - Control Component: reference\knime\claims-p1\cmp-control.md 
         - ingest component: reference\knime\claims-p1\cmp-ingest.md
         - py script: reference\knime\claims-p1\py-read-excel.md
+        - py table validation: reference\knime\claims-p1\سpy-table-validation.md
 
       - Python Script Specifications: reference/python-scripts.md
       - Excel Data Schemas: reference/excel-schemas.md
