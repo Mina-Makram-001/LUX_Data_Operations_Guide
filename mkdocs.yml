@@ -39,6 +39,11 @@ nav:
         - ingest component: reference\knime\claims-p1\cmp-ingest.md
         - py script: reference\knime\claims-p1\py-read-excel.md
 
+      - claims part II:
+          - Float Parse Component: reference/knime/claims-p2/meta-standardize/cmp-float-parse.md
+          - Date Parse Component: reference/knime/claims-p2/meta-standardize/cmp-date-parse.md
+          - Mapping LOB Meta: reference/knime/claims-p2/meta-standardize/meta-lob-mapping.md
+
       - Python Script Specifications: reference/python-scripts.md
       - Excel Data Schemas: reference/excel-schemas.md
       - Config File Settings: reference/config-settings.md
