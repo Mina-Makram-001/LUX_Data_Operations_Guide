@@ -1,159 +1,87 @@
-# KNIME Workflow Documentation: Standardize & Export (`claims p1v2`)
+# 📦 Export Sub-Workflow Documentation
 
-> **Workflow Path:** `claims p1v2` ➔ `Standardize & Export`  
-> **Platform:** KNIME Analytics Platform  
-> **Purpose:** Data quality auditing, dictionary-based column standardization, parallel aggregation by Line of Business (LOB) & Status, and automated multi-format report exporting.
+> **KNIME Analytics Platform** | **Workflow Path:** `claims p1v2` ➔ `Standardize & Export` ➔ `export`
 
 ---
 
-## 📌 Executive Overview
+## 📌 Overview
 
-The **Standardize & Export** sub-workflow forms the core ETL and data hygiene pipeline for processing insurance/claims dataset batches. It ensures data integrity through a multi-stage filtering process, dynamically renames dataset schema attributes using an external mapping dictionary, performs parallel data aggregation, and outputs standardized data alongside Data Quality Reports (DQR).
+The **`export`** sub-workflow is a modular KNIME component responsible for serializing and storing processed claims data into dual output formats:
 
- KNIME Data Pipeline Diagram
+* 🟢 **Apache Parquet (`.parquet`)**: Optimized columnar storage format for high-speed analytical queries and data lake ingestion.
+* 🟡 **JSON (`.json`)**: Structured document format designed for API consumption, web applications, or document databases.
+
+This component handles path management, variable manipulation, and multi-format file serialization in a unified pipeline.
+
+---
+
+## 🏗️ Workflow Architecture
 
 ```mermaid
-%%{
-  init: {
-    'theme': 'base',
-    'themeVariables': {
-      'primaryColor': '#ffffff',
-      'primaryTextColor': '#2d3748',
-      'primaryBorderColor': '#cbd5e0',
-      'lineColor': '#4a5568',
-      'tertiaryColor': '#f7fafc'
-    },
-    'flowchart': {
-      'curve': 'stepAfter',
-      'padding': 15,
-      'nodeSpacing': 50,
-      'rankSpacing': 60
-    }
-  }
-}%%
-
-graph TD
-    %% Source Nodes
-    A[Incoming Claims Data] --> B[Column Aggregator<br/><i>Missing Value Aggregator</i>]
-    B --> C[Row Splitter<br/><i>Filter Missing Rows</i>]
-
-    %% Main Branching
-    C -- Valid Rows --> D[Row Splitter<br/><i>Row Filter drop ghost rows</i>]
-    C -- Invalid Rows --> E[Parquet Writer<br/><i>DQR01 File</i>]
-
-    D -- Clean Rows --> F[Column Renamer Dictionary<br/><i>Column Rename</i>]
-    D -- Ghost Rows --> G[Parquet Writer<br/><i>DQR02 File</i>]
-
-    H[Excel Reader<br/><i>Data_Var_Names</i>] --> F
-
-    F --> I[Export Component]
-
-    %% Parallel Pipelines Alignment
-    subgraph Status_Pipeline [STATUS Pipeline]
-        K[GroupBy: STATUS] --> O[String Manipulation: STATUS] --> P[GroupBy Secondary]
+graph LR
+    subgraph Path & Variable Setup
+        CFV[Create File/Folder Variables] -->|Flow Variable| PW[Parquet Writer]
     end
 
-    subgraph LOB_Pipeline [LOB Pipeline]
-        J[GroupBy: LOB] --> L[String Manipulation: LOB] --> M[GroupBy Secondary]
+    subgraph Main Data Stream
+        IN[Data Input Port] -->|Data Table| PW
     end
 
-    F --> K
-    F --> J
+    subgraph JSON Export Pipeline
+        PW -->|Flow Variable| VE[Variable Expression]
+        VE -->|Flow Variable| V2T[Variable to Table Row]
+        V2T -->|Data Table| T2J[Table to JSON]
+        T2J -->|JSON Stream| JW[JSON Writer]
+    end
 
-    P --> N[Excel Writer<br/><i>EXPORT MAPPING</i>]
-    M --> N
-
-    %% Styling to mimic clean modern layout
-    classDef default fill:#ffffff,stroke:#64748b,stroke-width:1px,color:#1e293b,rx:3px,ry:3px;
-    classDef highlight fill:#edf2f7,stroke:#4a5568,stroke-width:1.5px,color:#1a202c,rx:3px,ry:3px;
-    
-    class A,N,E,G highlight;
+    style CFV fill:#ffffff,stroke:#333,stroke-width:1px
+    style PW fill:#e1f5fe,stroke:#0288d1,stroke-width:2px
+    style VE fill:#ffffff,stroke:#333,stroke-width:1px
+    style V2T fill:#ffffff,stroke:#333,stroke-width:1px
+    style T2J fill:#ffffff,stroke:#333,stroke-width:1px
+    style JW fill:#ffebee,stroke:#c62828,stroke-width:2px
 ```
 
+---
+
+## 🧩 Node-by-Node Breakdown
+
+| Step | Node Name | Category / Type | Input Port | Output Port | Description & Functionality |
+| :---: | :--- | :--- | :--- | :--- | :--- |
+| **1** | **Create File/Folder Variables** | Path Config | N/A | Flow Variable *(Red)* | Generates dynamic file and folder paths as flow variables for output destinations. |
+| **2** | **Parquet Writer** | Data Writer | Data Table & Flow Var | Flow Variable *(Red)* | Writes the primary dataset to a `.parquet` file in the configured directory path. |
+| **3** | **Variable Expression** | Logic | Flow Variable *(Red)* | Flow Variable *(Red)* | Evaluates and formats flow variables required for JSON generation (e.g., target file names). |
+| **4** | **Variable to Table Row** | Converter | Flow Variable *(Red)* | Data Table *(Black)* | Converts flow variable key-value pairs into a single-row data table to feed downstream nodes. |
+| **5** | **Table to JSON** | Transformer | Data Table *(Black)* | JSON Table *(Black)* | Converts the tabular structure into a formatted JSON payload. |
+| **6** | **JSON Writer** | Data Writer | JSON Table *(Black)* | Disk File | Serializes and exports the JSON payload to a `.json` file on disk. |
 
 ---
 
-## 🛠️ Step-by-Step Node & Component Analysis
+## 💾 File I/O Summary
 
-### 1️⃣ Data Quality & Row Filtering Stage
-*This initial stage handles missing values and isolates corrupt or empty rows to generate Data Quality Reports (DQR).*
-
-| Node Type | Custom Label | Input Source | Primary Function | Output Destination |
-| :--- | :--- | :--- | :--- | :--- |
-| **Column Aggregator** | `Missing Value Aggregator` | Upstream Pipeline | Aggregates column metrics to identify missing values across data fields. | `Filter Missing Rows` |
-| **Row Splitter** | `Filter Missing Rows` | `Missing Value Aggregator` | Splits records based on missing value thresholds.<br>• **Top Port:** Valid records<br>• **Bottom Port:** Corrupt/missing records | • **Top:** Row Filter (drop ghost rows)<br>• **Bottom:** Parquet Writer (DQR01) |
-| **Parquet Writer** | `DQR01` | `Filter Missing Rows` (Bottom) | **[Output File]** Exports invalid/missing rows to a Parquet file for Data Quality Audit 01. | File System (`.parquet`) |
-| **Row Splitter** | `Row Filter (drop ghost rows)` | `Filter Missing Rows` (Top) | Filters out ghost/empty rows.<br>• **Top Port:** Clean data stream<br>• **Bottom Port:** Ghost rows | • **Top:** Column Rename (Dictionary)<br>• **Bottom:** Parquet Writer (DQR02) |
-| **Parquet Writer** | `DQR02` | `Row Filter` (Bottom) | **[Output File]** Exports ghost/empty records to a Parquet file for Data Quality Audit 02. | File System (`.parquet`) |
+> ℹ️ **Input & Output Channels**
+>
+> * **Input Data Port (Left Boundary):** Receives the incoming standardized data table from the parent `Standardize & Export` container.
+> * **Parquet File Output (`.parquet`):** Written directly by the **Parquet Writer** node using dynamic path variables.
+> * **JSON File Output (`.json`):** Written directly by the **JSON Writer** node after variable-to-table conversion.
 
 ---
 
-### 2️⃣ Schema Standardization Stage
-*This stage standardizes incoming attribute headers using a dynamic dictionary mapping from an external Excel file.*
+## 🔄 Data & Control Flow Mechanics
 
-```
-Incoming Clean Data (Top) ─────┐
-                               ├──► [ Column Renamer (Dictionary) ] ──► Standardized Data Stream
-Excel Dictionary File (Bottom) ─┘
-```
+1. **Path Variable Propagation:**
+   `Create File/Folder Variables` initializes path parameters and passes them via the top flow variable port (red line) to `Parquet Writer`.
 
-* **`Excel Reader (Data_Var_Names)` (Input File)**  
-  * **Role:** Reads an external Excel configuration workbook (`Data_Var_Names`) containing old column names and target standardized variable names.
-* **`Column Renamer (Dictionary)`**  
-  * **Role:** Matches incoming data headers against the dictionary table and dynamically renames columns to align with standardized enterprise naming conventions.
-* **`export` (Component)**  
-  * **Role:** Encapsulated sub-component that receives a copy of the standardized data stream for downstream export tasks.
+2. **Primary Dataset Serialization:**
+   The main data stream enters from the left component port into `Parquet Writer` and is written directly to disk.
 
----
+3. **Sequential Flow Trigger:**
+   Upon completion of the Parquet write operation, `Parquet Writer` passes execution/flow variables to `Variable Expression`.
 
-### 3️⃣ Parallel Transformation & Aggregation Stage
-*After standardization, the pipeline splits into two concurrent transformation branches:*
-
-#### 🔹 Branch A: Line of Business (LOB) Processing
-1. **GroupBy (LOB):** Aggregates clean records grouped by the Line of Business attribute (`LOB`).
-2. **String Manipulation:** Cleans, formats, and standardizes text strings resulting from the LOB aggregation.
-3. **GroupBy:** Executes secondary aggregation to finalize summary statistics for LOB metrics.
-
-#### 🔹 Branch B: Claim Status (STATUS) Processing
-1. **GroupBy (STATUS):** Aggregates clean records grouped by claim lifecycle status (`STATUS`).
-2. **String Manipulation:** Applies string functions and status categorization logic.
-3. **GroupBy:** Executes secondary aggregation to finalize summary statistics for Status metrics.
+4. **JSON Conversion Pipeline:**
+   * `Variable Expression` tunes the variables.
+   * `Variable to Table Row` converts these variables into a row dataset, bridging the gap between flow variables and table streams.
+   * `Table to JSON` structures the row into a JSON object.
+   * `JSON Writer` writes the final output file to disk.
 
 ---
-
-### 4️⃣ Final Export Stage
-
-* **`Excel Writer (EXPORT MAPPING)` (Output File)**  
-  * **Role:** Combines output streams from both **Branch A (LOB)** and **Branch B (STATUS)** into dedicated sheets/tables inside a single Excel workbook.
-
----
-
-## 📁 File I/O Architecture Summary
-
-### 📥 Inputs
-* **Node:** `Excel Reader (Data_Var_Names)`  
-  * **Format:** XLSX / XLS  
-  * **Purpose:** Column renaming mapping dictionary  
-
-### 📤 Outputs
-* **Node:** `Parquet Writer (DQR01)`  
-  * **Format:** Parquet (`.parquet`)  
-  * **Purpose:** Data Quality Audit Report 01 (Missing Value Rows)  
-* **Node:** `Parquet Writer (DQR02)`  
-  * **Format:** Parquet (`.parquet`)  
-  * **Purpose:** Data Quality Audit Report 02 (Ghost / Empty Rows)  
-* **Node:** `Excel Writer (EXPORT MAPPING)`  
-  * **Format:** XLSX  
-  * **Purpose:** Consolidated LOB and Status aggregation report  
-
----
-
-## 🚦 Node Execution Status Guide
-
-| Status Indicator | Visual Appearance | Meaning in Workflow | Action Required |
-| :---: | :---: | :--- | :--- |
-| **Executed / Configured** | 🟡 Yellow Node / 🟢 Green Light | Node is properly configured or successfully executed. | **None (Ready).** |
-| **Unconfigured / File Warning** | 🔴 Red File Icon / 🔴 Red Light | File path or reader/writer settings need configuration. | **Double-click node to set input/output file paths.** |
-
----
-
